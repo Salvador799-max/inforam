@@ -1,0 +1,765 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>La Evolución de la RAM</title>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Share+Tech+Mono&family=Exo+2:wght@300;400;600&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg:        #050a0f;
+      --surface:   #0b1520;
+      --card:      #0f1e2e;
+      --accent1:   #00e5ff;
+      --accent2:   #ff6d00;
+      --accent3:   #76ff03;
+      --text:      #cfe8ff;
+      --muted:     #5a7a9a;
+      --glow1:     0 0 12px #00e5ff88, 0 0 40px #00e5ff33;
+      --glow2:     0 0 12px #ff6d0088, 0 0 40px #ff6d0033;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Exo 2', sans-serif;
+      font-weight: 300;
+      overflow-x: hidden;
+      line-height: 1.7;
+    }
+
+    /* ── Scanline overlay ── */
+    body::before {
+      content: '';
+      position: fixed; inset: 0; z-index: 999; pointer-events: none;
+      background: repeating-linear-gradient(
+        0deg,
+        transparent,
+        transparent 2px,
+        rgba(0,0,0,.07) 2px,
+        rgba(0,0,0,.07) 4px
+      );
+    }
+
+    /* ── Grid background ── */
+    body::after {
+      content: '';
+      position: fixed; inset: 0; z-index: -1;
+      background-image:
+        linear-gradient(rgba(0,229,255,.04) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(0,229,255,.04) 1px, transparent 1px);
+      background-size: 40px 40px;
+      animation: gridShift 20s linear infinite;
+    }
+    @keyframes gridShift { to { background-position: 0 40px; } }
+
+    /* ── HERO ── */
+    header {
+      min-height: 100vh;
+      display: flex; flex-direction: column;
+      justify-content: center; align-items: center;
+      text-align: center;
+      padding: 2rem;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .hero-glow {
+      position: absolute;
+      width: 600px; height: 600px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(0,229,255,.12) 0%, transparent 70%);
+      animation: pulse 4s ease-in-out infinite;
+    }
+    @keyframes pulse {
+      0%,100% { transform: scale(1); opacity: .7; }
+      50%      { transform: scale(1.15); opacity: 1; }
+    }
+
+    .chip-icon {
+      font-size: 5rem;
+      margin-bottom: 1.5rem;
+      animation: float 3s ease-in-out infinite;
+    }
+    @keyframes float {
+      0%,100% { transform: translateY(0); }
+      50%      { transform: translateY(-14px); }
+    }
+
+    header h1 {
+      font-family: 'Orbitron', sans-serif;
+      font-weight: 900;
+      font-size: clamp(2.2rem, 6vw, 5rem);
+      letter-spacing: .1em;
+      text-transform: uppercase;
+      background: linear-gradient(135deg, var(--accent1) 0%, #ffffff 50%, var(--accent2) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      animation: slideDown .8s ease both;
+    }
+    @keyframes slideDown {
+      from { opacity: 0; transform: translateY(-30px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    header .subtitle {
+      margin-top: 1rem;
+      font-family: 'Share Tech Mono', monospace;
+      font-size: clamp(.9rem, 2vw, 1.1rem);
+      color: var(--accent1);
+      letter-spacing: .2em;
+      text-transform: uppercase;
+      animation: slideDown .8s .2s ease both;
+    }
+
+    .scroll-hint {
+      position: absolute; bottom: 2rem;
+      font-family: 'Share Tech Mono', monospace;
+      font-size: .75rem;
+      color: var(--muted);
+      letter-spacing: .15em;
+      animation: blink 1.6s ease-in-out infinite;
+    }
+    @keyframes blink { 0%,100%{opacity:1} 50%{opacity:.2} }
+
+    /* ── SECTION BASE ── */
+    section {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 5rem 2rem;
+    }
+
+    .section-label {
+      font-family: 'Share Tech Mono', monospace;
+      font-size: .75rem;
+      letter-spacing: .25em;
+      color: var(--accent2);
+      text-transform: uppercase;
+      margin-bottom: .5rem;
+    }
+
+    h2 {
+      font-family: 'Orbitron', sans-serif;
+      font-size: clamp(1.5rem, 3.5vw, 2.4rem);
+      font-weight: 700;
+      margin-bottom: 2.5rem;
+      color: #fff;
+      position: relative;
+    }
+    h2::after {
+      content: '';
+      display: block;
+      width: 60px; height: 3px;
+      background: var(--accent1);
+      margin-top: .6rem;
+      box-shadow: var(--glow1);
+    }
+
+    p { color: var(--text); margin-bottom: 1rem; font-size: 1.02rem; }
+
+    /* ── TIMELINE ── */
+    .timeline {
+      position: relative;
+      padding-left: 2rem;
+    }
+    .timeline::before {
+      content: '';
+      position: absolute; left: 0; top: 0; bottom: 0;
+      width: 2px;
+      background: linear-gradient(to bottom, var(--accent1), var(--accent2), var(--accent3));
+      box-shadow: var(--glow1);
+    }
+
+    .tl-item {
+      position: relative;
+      margin-bottom: 3rem;
+      padding-left: 2rem;
+      opacity: 0;
+      transform: translateX(-20px);
+      animation: fadeIn .6s ease forwards;
+    }
+    .tl-item:nth-child(1)  { animation-delay: .1s; }
+    .tl-item:nth-child(2)  { animation-delay: .2s; }
+    .tl-item:nth-child(3)  { animation-delay: .3s; }
+    .tl-item:nth-child(4)  { animation-delay: .4s; }
+    .tl-item:nth-child(5)  { animation-delay: .5s; }
+    .tl-item:nth-child(6)  { animation-delay: .6s; }
+    .tl-item:nth-child(7)  { animation-delay: .7s; }
+    .tl-item:nth-child(8)  { animation-delay: .8s; }
+    @keyframes fadeIn {
+      to { opacity: 1; transform: translateX(0); }
+    }
+
+    .tl-dot {
+      position: absolute; left: -2.6rem; top: .3rem;
+      width: 14px; height: 14px;
+      border-radius: 50%;
+      background: var(--accent1);
+      box-shadow: var(--glow1);
+      border: 2px solid var(--bg);
+    }
+
+    .tl-year {
+      font-family: 'Orbitron', monospace;
+      font-size: .8rem;
+      color: var(--accent2);
+      letter-spacing: .15em;
+      margin-bottom: .2rem;
+    }
+
+    .tl-item h3 {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 1rem;
+      color: var(--accent1);
+      margin-bottom: .4rem;
+    }
+
+    .tl-item p { font-size: .95rem; color: var(--muted); margin: 0; }
+
+    /* ── CARDS GRID ── */
+    .cards {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 1.5rem;
+      margin-top: 1rem;
+    }
+
+    .card {
+      background: var(--card);
+      border: 1px solid rgba(0,229,255,.15);
+      border-radius: 12px;
+      padding: 1.8rem 1.5rem;
+      position: relative;
+      overflow: hidden;
+      transition: transform .3s, border-color .3s, box-shadow .3s;
+    }
+    .card::before {
+      content: '';
+      position: absolute; inset: 0;
+      background: linear-gradient(135deg, rgba(0,229,255,.06), transparent 60%);
+      opacity: 0;
+      transition: opacity .3s;
+    }
+    .card:hover { transform: translateY(-6px); border-color: var(--accent1); box-shadow: var(--glow1); }
+    .card:hover::before { opacity: 1; }
+
+    .card-icon { font-size: 2rem; margin-bottom: .8rem; }
+    .card h3 {
+      font-family: 'Orbitron', sans-serif;
+      font-size: .9rem;
+      color: var(--accent1);
+      letter-spacing: .05em;
+      margin-bottom: .6rem;
+    }
+    .card p { font-size: .88rem; color: var(--muted); margin: 0; }
+
+    /* ── BAR CHART ── */
+    .bar-section { background: var(--surface); border-radius: 16px; padding: 2.5rem; margin-top: 1rem; }
+
+    .bar-row {
+      display: flex; align-items: center; gap: 1rem; margin-bottom: 1.2rem;
+    }
+    .bar-label {
+      font-family: 'Share Tech Mono', monospace;
+      font-size: .78rem;
+      color: var(--text);
+      min-width: 90px;
+    }
+    .bar-track {
+      flex: 1; height: 22px;
+      background: rgba(255,255,255,.05);
+      border-radius: 4px;
+      overflow: hidden;
+    }
+    .bar-fill {
+      height: 100%;
+      border-radius: 4px;
+      position: relative;
+      animation: growBar 1.4s cubic-bezier(.22,1,.36,1) both;
+    }
+    @keyframes growBar { from { width: 0 !important; } }
+
+    .bar-val {
+      font-family: 'Share Tech Mono', monospace;
+      font-size: .78rem;
+      color: var(--accent1);
+      min-width: 70px;
+      text-align: right;
+    }
+
+    /* ── SPECS TABLE ── */
+    .table-wrap { overflow-x: auto; margin-top: 1rem; }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: .9rem;
+    }
+    thead tr {
+      background: rgba(0,229,255,.08);
+      border-bottom: 1px solid rgba(0,229,255,.3);
+    }
+    thead th {
+      font-family: 'Orbitron', sans-serif;
+      font-size: .75rem;
+      letter-spacing: .1em;
+      color: var(--accent1);
+      padding: .9rem 1rem;
+      text-align: left;
+      white-space: nowrap;
+    }
+    tbody tr {
+      border-bottom: 1px solid rgba(255,255,255,.05);
+      transition: background .2s;
+    }
+    tbody tr:hover { background: rgba(0,229,255,.05); }
+    tbody td {
+      padding: .75rem 1rem;
+      color: var(--muted);
+      white-space: nowrap;
+    }
+    tbody td:first-child { color: var(--text); font-weight: 600; }
+    .badge {
+      display: inline-block;
+      padding: .15rem .6rem;
+      border-radius: 20px;
+      font-size: .7rem;
+      font-family: 'Share Tech Mono', monospace;
+    }
+    .badge-blue  { background: rgba(0,229,255,.15); color: var(--accent1); }
+    .badge-or    { background: rgba(255,109,0,.15);  color: var(--accent2); }
+    .badge-green { background: rgba(118,255,3,.15);  color: var(--accent3); }
+
+    /* ── FUTURE SECTION ── */
+    .future-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 1.2rem;
+      margin-top: 1rem;
+    }
+    .future-card {
+      border: 1px solid rgba(118,255,3,.2);
+      border-radius: 10px;
+      padding: 1.4rem;
+      background: linear-gradient(135deg, rgba(118,255,3,.04), transparent);
+      transition: box-shadow .3s;
+    }
+    .future-card:hover { box-shadow: 0 0 18px rgba(118,255,3,.25); }
+    .future-card h3 {
+      font-family: 'Orbitron', sans-serif;
+      font-size: .85rem;
+      color: var(--accent3);
+      margin-bottom: .5rem;
+    }
+    .future-card p { font-size: .85rem; color: var(--muted); margin: 0; }
+
+    /* ── DIVIDER ── */
+    .divider {
+      height: 1px;
+      background: linear-gradient(90deg, transparent, var(--accent1), transparent);
+      opacity: .3;
+      margin: 0 2rem;
+    }
+
+    /* ── FOOTER ── */
+    footer {
+      text-align: center;
+      padding: 3rem 2rem;
+      font-family: 'Share Tech Mono', monospace;
+      font-size: .75rem;
+      color: var(--muted);
+      letter-spacing: .1em;
+    }
+    footer span { color: var(--accent1); }
+
+    /* ── NAV ── */
+    nav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+      display: flex; justify-content: space-between; align-items: center;
+      padding: 1rem 2rem;
+      background: rgba(5,10,15,.85);
+      backdrop-filter: blur(10px);
+      border-bottom: 1px solid rgba(0,229,255,.1);
+    }
+    .nav-logo {
+      font-family: 'Orbitron', sans-serif;
+      font-size: .9rem;
+      color: var(--accent1);
+      letter-spacing: .15em;
+    }
+    .nav-links { display: flex; gap: 2rem; list-style: none; }
+    .nav-links a {
+      font-family: 'Share Tech Mono', monospace;
+      font-size: .75rem;
+      color: var(--muted);
+      text-decoration: none;
+      letter-spacing: .1em;
+      transition: color .2s;
+    }
+    .nav-links a:hover { color: var(--accent1); }
+
+    @media (max-width: 600px) {
+      .nav-links { display: none; }
+      .bar-label { min-width: 60px; font-size: .7rem; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-logo">RAM//EVOLUTION</div>
+  <ul class="nav-links">
+    <li><a href="#historia">Historia</a></li>
+    <li><a href="#tipos">Tipos</a></li>
+    <li><a href="#specs">Especificaciones</a></li>
+    <li><a href="#futuro">Futuro</a></li>
+  </ul>
+</nav>
+
+<!-- HERO -->
+<header>
+  <div class="hero-glow"></div>
+  <div class="chip-icon">🧠</div>
+  <h1>La Evolución de la RAM</h1>
+  <p class="subtitle">// Memoria de Acceso Aleatorio · Desde los Orígenes hasta el Futuro</p>
+  <div class="scroll-hint">▼ SCROLL PARA EXPLORAR ▼</div>
+</header>
+
+<!-- QUÉ ES LA RAM -->
+<section id="historia">
+  <div class="section-label">// 01 · Introducción</div>
+  <h2>¿Qué es la RAM?</h2>
+  <p>La <strong>Memoria de Acceso Aleatorio</strong> (RAM, por sus siglas en inglés) es el componente del sistema que almacena temporalmente los datos e instrucciones que el procesador necesita de forma inmediata. A diferencia del almacenamiento permanente, la RAM es volátil: su contenido desaparece al apagar el sistema.</p>
+  <p>Durante décadas, la RAM ha sido uno de los cuellos de botella más críticos en el rendimiento de los ordenadores. Su evolución ha ido de la mano con la ley de Moore y las demandas crecientes del software moderno.</p>
+</section>
+
+<div class="divider"></div>
+
+<!-- TIMELINE -->
+<section>
+  <div class="section-label">// 02 · Cronología</div>
+  <h2>Historia de la RAM</h2>
+  <div class="timeline">
+
+    <div class="tl-item">
+      <div class="tl-dot"></div>
+      <div class="tl-year">1947 · Tubo Williams</div>
+      <h3>Los Primeros Pasos</h3>
+      <p>El tubo Williams-Kilburn fue la primera memoria de acceso aleatorio verdadera, capaz de almacenar unos pocos cientos de bits usando rayos de electrones en un tubo de rayos catódicos.</p>
+    </div>
+
+    <div class="tl-item">
+      <div class="tl-dot"></div>
+      <div class="tl-year">1968 · DRAM</div>
+      <h3>Nacimiento de la DRAM</h3>
+      <p>Robert Dennard en IBM patenta la memoria dinámica de acceso aleatorio (DRAM). Un transistor y un condensador por celda revolucionaron la densidad de almacenamiento.</p>
+    </div>
+
+    <div class="tl-item">
+      <div class="tl-dot"></div>
+      <div class="tl-year">1987 · FPM DRAM</div>
+      <h3>Fast Page Mode</h3>
+      <p>La FPM DRAM permitió acceder a varias celdas dentro de la misma fila de forma más rápida, mejorando notablemente el ancho de banda disponible.</p>
+    </div>
+
+    <div class="tl-item">
+      <div class="tl-dot"></div>
+      <div class="tl-year">1993 · SDRAM</div>
+      <h3>Sincronización con el Bus del Sistema</h3>
+      <p>La SDRAM sincronizó las operaciones de memoria con el reloj del sistema, eliminando los tiempos de espera asíncronos. Las capacidades típicas rondaban los 16–64 MB.</p>
+    </div>
+
+    <div class="tl-item">
+      <div class="tl-dot"></div>
+      <div class="tl-year">2000 · DDR</div>
+      <h3>Double Data Rate</h3>
+      <p>La DDR SDRAM transfiere datos en los dos flancos del ciclo de reloj, duplicando teóricamente el ancho de banda. Las velocidades iban de 200 a 400 MT/s.</p>
+    </div>
+
+    <div class="tl-item">
+      <div class="tl-dot"></div>
+      <div class="tl-year">2003 · DDR2</div>
+      <h3>Mayor Frecuencia, Menor Voltaje</h3>
+      <p>DDR2 redujo el voltaje a 1,8 V y dobló la velocidad del bus de E/S. Velocidades de hasta 1066 MT/s con módulos de hasta 4 GB.</p>
+    </div>
+
+    <div class="tl-item">
+      <div class="tl-dot"></div>
+      <div class="tl-year">2007 · DDR3</div>
+      <h3>Eficiencia y Capacidad</h3>
+      <p>Voltaje de 1,5 V, velocidades entre 800 y 2133 MT/s. Popularizó los 8 GB como estándar para equipos de consumo y gaming.</p>
+    </div>
+
+    <div class="tl-item">
+      <div class="tl-dot"></div>
+      <div class="tl-year">2014 · DDR4</div>
+      <h3>La Era del Gaming Moderno</h3>
+      <p>Voltaje de 1,2 V, latencias reducidas, velocidades de 2133 a 5333 MT/s. Los 16–32 GB se convirtieron en el estándar. XMP y perfiles de overclocking impulsaron el ecosistema.</p>
+    </div>
+
+    <div class="tl-item">
+      <div class="tl-dot"></div>
+      <div class="tl-year">2020 · DDR5</div>
+      <h3>El Presente de Alta Velocidad</h3>
+      <p>Voltaje de 1,1 V, comienza en 4800 MT/s y supera los 7200 MT/s en kits de alto rendimiento. Duplica la densidad de chips, corrección de errores ECC nativa y cargas de trabajo de IA y creación de contenido.</p>
+    </div>
+
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- TIPOS DE RAM -->
+<section id="tipos">
+  <div class="section-label">// 03 · Tipos</div>
+  <h2>Tipos de Memoria RAM</h2>
+  <div class="cards">
+
+    <div class="card">
+      <div class="card-icon">⚡</div>
+      <h3>DRAM</h3>
+      <p>Memoria dinámica. Requiere refresco constante. Base de toda la RAM moderna de propósito general en PCs y servidores.</p>
+    </div>
+
+    <div class="card">
+      <div class="card-icon">🔒</div>
+      <h3>SRAM</h3>
+      <p>Estática, más rápida y cara. No necesita refresco. Se usa en cachés L1, L2 y L3 dentro de los procesadores.</p>
+    </div>
+
+    <div class="card">
+      <div class="card-icon">📱</div>
+      <h3>LPDDR</h3>
+      <p>Low Power DDR para dispositivos móviles. LPDDR5X supera los 8533 MT/s con consumo optimizado para smartphones.</p>
+    </div>
+
+    <div class="card">
+      <div class="card-icon">🎮</div>
+      <h3>GDDR</h3>
+      <p>RAM gráfica de alto ancho de banda. GDDR7 (2024) alcanza anchos de banda superiores a 1.5 TB/s en GPUs como la RTX 50XX.</p>
+    </div>
+
+    <div class="card">
+      <div class="card-icon">🏎️</div>
+      <h3>HBM</h3>
+      <p>High Bandwidth Memory. Apilada sobre el die en chips 3D. Usada en GPUs profesionales y aceleradores de IA como los H100 de NVIDIA.</p>
+    </div>
+
+    <div class="card">
+      <div class="card-icon">🌐</div>
+      <h3>ECC RAM</h3>
+      <p>Corrección de errores en tiempo real. Indispensable en servidores, estaciones de trabajo y sistemas críticos donde los errores de bit son inaceptables.</p>
+    </div>
+
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- BAR CHART -->
+<section>
+  <div class="section-label">// 04 · Rendimiento</div>
+  <h2>Evolución del Ancho de Banda</h2>
+  <div class="bar-section">
+
+    <div class="bar-row">
+      <span class="bar-label">SDRAM</span>
+      <div class="bar-track">
+        <div class="bar-fill" style="width:4%; background:linear-gradient(90deg,#5a7a9a,#7090aa);"></div>
+      </div>
+      <span class="bar-val">~800 MB/s</span>
+    </div>
+
+    <div class="bar-row">
+      <span class="bar-label">DDR</span>
+      <div class="bar-track">
+        <div class="bar-fill" style="width:7%; background:linear-gradient(90deg,#2196f3,#42a5f5);"></div>
+      </div>
+      <span class="bar-val">~3.2 GB/s</span>
+    </div>
+
+    <div class="bar-row">
+      <span class="bar-label">DDR2</span>
+      <div class="bar-track">
+        <div class="bar-fill" style="width:12%; background:linear-gradient(90deg,#2196f3,#42a5f5);"></div>
+      </div>
+      <span class="bar-val">~8.5 GB/s</span>
+    </div>
+
+    <div class="bar-row">
+      <span class="bar-label">DDR3</span>
+      <div class="bar-track">
+        <div class="bar-fill" style="width:22%; background:linear-gradient(90deg,#00bcd4,#00e5ff);"></div>
+      </div>
+      <span class="bar-val">~17 GB/s</span>
+    </div>
+
+    <div class="bar-row">
+      <span class="bar-label">DDR4</span>
+      <div class="bar-track">
+        <div class="bar-fill" style="width:45%; background:linear-gradient(90deg,#00acc1,#00e5ff);"></div>
+      </div>
+      <span class="bar-val">~34 GB/s</span>
+    </div>
+
+    <div class="bar-row">
+      <span class="bar-label">DDR5</span>
+      <div class="bar-track">
+        <div class="bar-fill" style="width:75%; background:linear-gradient(90deg,#00e5ff,#80ffff); box-shadow:0 0 10px #00e5ff88;"></div>
+      </div>
+      <span class="bar-val">~57 GB/s</span>
+    </div>
+
+    <div class="bar-row">
+      <span class="bar-label">LPDDR5X</span>
+      <div class="bar-track">
+        <div class="bar-fill" style="width:68%; background:linear-gradient(90deg,#ff6d00,#ffa040); box-shadow:0 0 10px #ff6d0066;"></div>
+      </div>
+      <span class="bar-val">~68 GB/s</span>
+    </div>
+
+    <div class="bar-row">
+      <span class="bar-label">HBM3e</span>
+      <div class="bar-track">
+        <div class="bar-fill" style="width:100%; background:linear-gradient(90deg,#76ff03,#b2ff59); box-shadow:0 0 10px #76ff0366;"></div>
+      </div>
+      <span class="bar-val">>1.2 TB/s</span>
+    </div>
+
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- SPECS TABLE -->
+<section id="specs">
+  <div class="section-label">// 05 · Especificaciones</div>
+  <h2>Tabla Comparativa DDR</h2>
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>Generación</th>
+          <th>Año</th>
+          <th>Voltaje</th>
+          <th>Velocidad (MT/s)</th>
+          <th>Ancho de banda</th>
+          <th>Capacidad máxima</th>
+          <th>Estado</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>SDRAM</td>
+          <td>1993</td>
+          <td>3.3 V</td>
+          <td>66 – 133</td>
+          <td>~1.06 GB/s</td>
+          <td>512 MB</td>
+          <td><span class="badge badge-blue">Obsoleto</span></td>
+        </tr>
+        <tr>
+          <td>DDR1</td>
+          <td>2000</td>
+          <td>2.5 V</td>
+          <td>200 – 400</td>
+          <td>~3.2 GB/s</td>
+          <td>1 GB</td>
+          <td><span class="badge badge-blue">Obsoleto</span></td>
+        </tr>
+        <tr>
+          <td>DDR2</td>
+          <td>2003</td>
+          <td>1.8 V</td>
+          <td>400 – 1066</td>
+          <td>~8.5 GB/s</td>
+          <td>4 GB</td>
+          <td><span class="badge badge-blue">Obsoleto</span></td>
+        </tr>
+        <tr>
+          <td>DDR3</td>
+          <td>2007</td>
+          <td>1.5 V</td>
+          <td>800 – 2133</td>
+          <td>~17 GB/s</td>
+          <td>16 GB</td>
+          <td><span class="badge badge-blue">Legado</span></td>
+        </tr>
+        <tr>
+          <td>DDR4</td>
+          <td>2014</td>
+          <td>1.2 V</td>
+          <td>2133 – 5333</td>
+          <td>~34 GB/s</td>
+          <td>64 GB</td>
+          <td><span class="badge badge-or">Activo</span></td>
+        </tr>
+        <tr>
+          <td>DDR5</td>
+          <td>2020</td>
+          <td>1.1 V</td>
+          <td>4800 – 7200+</td>
+          <td>~57 GB/s</td>
+          <td>256 GB</td>
+          <td><span class="badge badge-green">Actual</span></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- FUTURO -->
+<section id="futuro">
+  <div class="section-label">// 06 · Futuro</div>
+  <h2>El Futuro de la RAM</h2>
+  <p>Las demandas de la inteligencia artificial, el metaverso y los entornos de computación edge están empujando los límites de lo que la RAM convencional puede ofrecer. Estas son las tecnologías que darán forma a la próxima década:</p>
+  <div class="future-grid">
+
+    <div class="future-card">
+      <h3>DDR6</h3>
+      <p>En desarrollo por JEDEC. Se espera que supere los 12 800 MT/s y reduzca el voltaje a 1.0 V. Llegada estimada: 2026–2027.</p>
+    </div>
+
+    <div class="future-card">
+      <h3>HBM4</h3>
+      <p>Apilado 3D de última generación para aceleradores de IA. Anchos de banda proyectados superiores a 2 TB/s por stack.</p>
+    </div>
+
+    <div class="future-card">
+      <h3>CXL Memory</h3>
+      <p>Compute Express Link permite expandir la memoria más allá del socket usando el bus PCIe, ideal para cargas de trabajo de IA y bases de datos masivas.</p>
+    </div>
+
+    <div class="future-card">
+      <h3>Memoria Fotónica</h3>
+      <p>Investigación en transmisión de datos de memoria mediante luz. Latencias ultrabaja y ancho de banda teórico varias veces superior al electrónico.</p>
+    </div>
+
+    <div class="future-card">
+      <h3>MRAM & RRAM</h3>
+      <p>Memorias no volátiles resistivas que combinan la velocidad de la RAM con la persistencia del almacenamiento. El fin de la RAM volátil está en el horizonte.</p>
+    </div>
+
+    <div class="future-card">
+      <h3>Memoria Neuromórfica</h3>
+      <p>Arquitecturas inspiradas en el cerebro humano donde la memoria y el cómputo coexisten en el mismo substrato, eliminando el cuello de botella Von Neumann.</p>
+    </div>
+
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <p>RAM//EVOLUTION · Diseñado con <span>⚡</span> · Todos los datos son orientativos</p>
+  <p style="margin-top:.5rem;">© 2026 · Tecnología en Constante Expansión</p>
+</footer>
+
+</body>
+</html>
