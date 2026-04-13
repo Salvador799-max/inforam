@@ -1,0 +1,567 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Evolución de la RAM: historia, tipos, especificaciones, análisis de mercado y precios en pesos argentinos." />
+  <title>Evolución de la RAM — Análisis Completo</title>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Share+Tech+Mono&family=Exo+2:wght@300;400;600&display=swap" rel="stylesheet" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+  <style>
+    :root {
+      --bg:      #050a0f;
+      --surface: #0b1520;
+      --card:    #0f1e2e;
+      --a1:      #00e5ff;
+      --a2:      #ff6d00;
+      --a3:      #76ff03;
+      --a4:      #ffd600;
+      --text:    #cfe8ff;
+      --muted:   #5a7a9a;
+      --g1: 0 0 14px #00e5ff66, 0 0 40px #00e5ff22;
+      --g2: 0 0 14px #ff6d0066, 0 0 40px #ff6d0022;
+      --g3: 0 0 14px #76ff0366, 0 0 40px #76ff0322;
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body {
+      background: var(--bg); color: var(--text);
+      font-family: 'Exo 2', sans-serif; font-weight: 300;
+      overflow-x: hidden; line-height: 1.75;
+    }
+    body::before {
+      content: ''; position: fixed; inset: 0; z-index: 9999; pointer-events: none;
+      background: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,0,0,.055) 2px, rgba(0,0,0,.055) 4px);
+    }
+    body::after {
+      content: ''; position: fixed; inset: 0; z-index: -1;
+      background-image: linear-gradient(rgba(0,229,255,.038) 1px, transparent 1px), linear-gradient(90deg, rgba(0,229,255,.038) 1px, transparent 1px);
+      background-size: 44px 44px; animation: gridDrift 22s linear infinite;
+    }
+    @keyframes gridDrift { to { background-position: 0 44px; } }
+
+    /* NAV */
+    nav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 1000;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: .85rem 2.5rem;
+      background: rgba(5,10,15,.9); backdrop-filter: blur(14px);
+      border-bottom: 1px solid rgba(0,229,255,.12);
+    }
+    .nav-brand {
+      font-family: 'Orbitron', sans-serif; font-size: .85rem; font-weight: 900;
+      letter-spacing: .2em; color: var(--a1); text-shadow: var(--g1); text-decoration: none;
+    }
+    .nav-links { display: flex; gap: .2rem; list-style: none; }
+    .nav-links a {
+      display: block; padding: .4rem .75rem;
+      font-family: 'Share Tech Mono', monospace; font-size: .67rem; letter-spacing: .1em;
+      color: var(--muted); text-decoration: none;
+      border-radius: 4px; border: 1px solid transparent;
+      transition: color .2s, border-color .2s, background .2s;
+    }
+    .nav-links a:hover { color: var(--a1); border-color: rgba(0,229,255,.3); background: rgba(0,229,255,.07); }
+    @media (max-width: 720px) { .nav-links { display: none; } nav { padding: .8rem 1.2rem; } }
+
+    /* HERO */
+    header {
+      min-height: 100vh; display: flex; flex-direction: column;
+      justify-content: center; align-items: center;
+      text-align: center; padding: 2rem; position: relative; overflow: hidden;
+    }
+    .hero-glow {
+      position: absolute; width: 650px; height: 650px; border-radius: 50%; pointer-events: none;
+      background: radial-gradient(circle, rgba(0,229,255,.11) 0%, transparent 70%);
+      animation: pulse 5s ease-in-out infinite;
+    }
+    @keyframes pulse { 0%,100%{transform:scale(1);opacity:.7} 50%{transform:scale(1.12);opacity:1} }
+    .chip-icon { font-size: 5rem; margin-bottom: 1.5rem; animation: float 3s ease-in-out infinite; }
+    @keyframes float { 0%,100%{transform:translateY(0) rotate(-2deg)} 50%{transform:translateY(-16px) rotate(2deg)} }
+    header h1 {
+      font-family: 'Orbitron', sans-serif; font-weight: 900;
+      font-size: clamp(2.2rem, 6vw, 5rem); letter-spacing: .08em;
+      background: linear-gradient(135deg, var(--a1) 0%, #fff 45%, var(--a2) 100%);
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+      animation: slideD .8s ease both;
+    }
+    @keyframes slideD { from{opacity:0;transform:translateY(-28px)} to{opacity:1;transform:translateY(0)} }
+    header .subtitle {
+      margin-top: 1rem; font-family: 'Share Tech Mono', monospace;
+      font-size: clamp(.8rem, 2vw, 1rem); color: var(--a1); letter-spacing: .2em;
+      animation: slideD .8s .2s ease both;
+    }
+    .scroll-hint {
+      position: absolute; bottom: 2rem;
+      font-family: 'Share Tech Mono', monospace; font-size: .72rem;
+      color: var(--muted); letter-spacing: .18em; animation: blink 1.7s ease-in-out infinite;
+    }
+    @keyframes blink { 0%,100%{opacity:1} 50%{opacity:.15} }
+
+    /* LAYOUT */
+    section { max-width: 1100px; margin: 0 auto; padding: 5rem 2rem; }
+    .section-label {
+      font-family: 'Share Tech Mono', monospace; font-size: .72rem;
+      letter-spacing: .25em; color: var(--a2); text-transform: uppercase; margin-bottom: .5rem;
+    }
+    h2 {
+      font-family: 'Orbitron', sans-serif;
+      font-size: clamp(1.4rem, 3.5vw, 2.2rem); font-weight: 700;
+      margin-bottom: 2rem; color: #fff; position: relative;
+    }
+    h2::after {
+      content: ''; display: block; width: 60px; height: 3px;
+      background: var(--a1); margin-top: .55rem; box-shadow: var(--g1); border-radius: 2px;
+    }
+    h2.ou::after { background: var(--a2); box-shadow: var(--g2); }
+    h2.gu::after { background: var(--a3); box-shadow: var(--g3); }
+    p { color: var(--text); margin-bottom: 1rem; font-size: 1rem; }
+    .divider {
+      height: 1px; margin: 0 2rem;
+      background: linear-gradient(90deg, transparent, rgba(0,229,255,.25), transparent);
+    }
+
+    /* TIMELINE */
+    .timeline { position: relative; padding-left: 2rem; }
+    .timeline::before {
+      content: ''; position: absolute; left: 0; top: 0; bottom: 0;
+      width: 2px; background: linear-gradient(to bottom, var(--a1), var(--a2), var(--a3));
+      box-shadow: var(--g1);
+    }
+    .tl-item {
+      position: relative; margin-bottom: 2.8rem; padding-left: 2rem;
+      opacity: 0; transform: translateX(-18px); animation: fadeIn .6s ease forwards;
+    }
+    .tl-item:nth-child(1){animation-delay:.08s}.tl-item:nth-child(2){animation-delay:.16s}
+    .tl-item:nth-child(3){animation-delay:.24s}.tl-item:nth-child(4){animation-delay:.32s}
+    .tl-item:nth-child(5){animation-delay:.40s}.tl-item:nth-child(6){animation-delay:.48s}
+    .tl-item:nth-child(7){animation-delay:.56s}.tl-item:nth-child(8){animation-delay:.64s}
+    @keyframes fadeIn { to{opacity:1;transform:translateX(0)} }
+    .tl-dot {
+      position: absolute; left: -2.6rem; top: .3rem;
+      width: 13px; height: 13px; border-radius: 50%;
+      background: var(--a1); box-shadow: var(--g1); border: 2px solid var(--bg);
+    }
+    .tl-year { font-family: 'Orbitron', monospace; font-size: .78rem; color: var(--a2); letter-spacing: .15em; margin-bottom: .2rem; }
+    .tl-item h3 { font-family: 'Orbitron', sans-serif; font-size: .95rem; color: var(--a1); margin-bottom: .35rem; }
+    .tl-item p { font-size: .92rem; color: var(--muted); margin: 0; }
+
+    /* CARDS */
+    .cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px,1fr)); gap: 1.4rem; margin-top: 1rem; }
+    .card {
+      background: var(--card); border: 1px solid rgba(0,229,255,.14); border-radius: 12px;
+      padding: 1.8rem 1.5rem; position: relative; overflow: hidden;
+      transition: transform .3s, border-color .3s, box-shadow .3s;
+    }
+    .card::before {
+      content: ''; position: absolute; inset: 0;
+      background: linear-gradient(135deg, rgba(0,229,255,.06), transparent 60%);
+      opacity: 0; transition: opacity .3s;
+    }
+    .card:hover { transform: translateY(-6px); border-color: var(--a1); box-shadow: var(--g1); }
+    .card:hover::before { opacity: 1; }
+    .card-icon { font-size: 2rem; margin-bottom: .8rem; }
+    .card h3 { font-family: 'Orbitron', sans-serif; font-size: .88rem; color: var(--a1); margin-bottom: .55rem; }
+    .card p { font-size: .87rem; color: var(--muted); margin: 0; }
+
+    /* BAR CHART */
+    .bar-section { background: var(--surface); border-radius: 16px; padding: 2.2rem; margin-top: 1rem; }
+    .bar-row { display: flex; align-items: center; gap: 1rem; margin-bottom: 1.1rem; }
+    .bar-label { font-family: 'Share Tech Mono', monospace; font-size: .75rem; color: var(--text); min-width: 90px; }
+    .bar-track { flex:1; height: 22px; background: rgba(255,255,255,.05); border-radius: 4px; overflow: hidden; }
+    .bar-fill { height: 100%; border-radius: 4px; animation: growBar 1.4s cubic-bezier(.22,1,.36,1) both; }
+    @keyframes growBar { from{width:0!important} }
+    .bar-val { font-family: 'Share Tech Mono', monospace; font-size: .75rem; color: var(--a1); min-width: 72px; text-align: right; }
+
+    /* SPECS TABLE */
+    .table-wrap { overflow-x: auto; margin-top: 1rem; }
+    table { width: 100%; border-collapse: collapse; font-size: .88rem; }
+    thead tr { background: rgba(0,229,255,.07); border-bottom: 1px solid rgba(0,229,255,.25); }
+    thead th { font-family: 'Orbitron', sans-serif; font-size: .68rem; letter-spacing: .1em; color: var(--a1); padding: .85rem 1rem; text-align: left; white-space: nowrap; }
+    tbody tr { border-bottom: 1px solid rgba(255,255,255,.05); transition: background .2s; }
+    tbody tr:hover { background: rgba(0,229,255,.05); }
+    tbody td { padding: .7rem 1rem; color: var(--muted); white-space: nowrap; }
+    tbody td:first-child { color: var(--text); font-weight: 600; }
+    .badge { display: inline-block; padding: .12rem .55rem; border-radius: 20px; font-family: 'Share Tech Mono', monospace; font-size: .65rem; }
+    .badge-blue { background: rgba(0,229,255,.13); color: var(--a1); }
+    .badge-or { background: rgba(255,109,0,.13); color: var(--a2); }
+    .badge-green { background: rgba(118,255,3,.13); color: var(--a3); }
+
+    /* FUTURE */
+    .future-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px,1fr)); gap: 1.2rem; margin-top: 1rem; }
+    .future-card {
+      border: 1px solid rgba(118,255,3,.2); border-radius: 10px;
+      padding: 1.4rem; background: linear-gradient(135deg, rgba(118,255,3,.04), transparent);
+      transition: box-shadow .3s;
+    }
+    .future-card:hover { box-shadow: 0 0 20px rgba(118,255,3,.2); }
+    .future-card h3 { font-family: 'Orbitron', sans-serif; font-size: .84rem; color: var(--a3); margin-bottom: .5rem; }
+    .future-card p { font-size: .85rem; color: var(--muted); margin: 0; }
+
+    /* MARKET */
+    .market-intro {
+      background: var(--surface); border: 1px solid rgba(255,109,0,.18);
+      border-radius: 14px; padding: 2rem 2.2rem; margin-bottom: 2.5rem;
+    }
+    .market-intro p { margin-bottom: .8rem; }
+    .market-intro p:last-child { margin-bottom: 0; }
+
+    .porter-table { width: 100%; border-collapse: collapse; font-size: .88rem; margin-top: 1.2rem; }
+    .porter-table thead tr { background: rgba(255,109,0,.1); border-bottom: 1px solid rgba(255,109,0,.25); }
+    .porter-table thead th { font-family: 'Orbitron', sans-serif; font-size: .66rem; letter-spacing: .1em; color: var(--a2); padding: .85rem 1rem; text-align: left; }
+    .porter-table tbody tr { border-bottom: 1px solid rgba(255,255,255,.05); transition: background .2s; }
+    .porter-table tbody tr:hover { background: rgba(255,109,0,.04); }
+    .porter-table tbody td { padding: .75rem 1rem; color: var(--muted); vertical-align: top; }
+    .porter-table tbody td:first-child { color: var(--text); font-weight: 600; white-space: nowrap; }
+
+    .rbadge { display: inline-block; padding: .15rem .6rem; border-radius: 20px; font-family: 'Share Tech Mono', monospace; font-size: .65rem; white-space: nowrap; }
+    .r-high { background: rgba(255,50,50,.18); color: #ff6b6b; }
+    .r-low  { background: rgba(118,255,3,.13); color: var(--a3); }
+    .r-nul  { background: rgba(90,122,154,.15); color: var(--muted); }
+    .r-mod  { background: rgba(255,214,0,.13); color: var(--a4); }
+
+    .callout {
+      border-left: 3px solid var(--a2);
+      background: linear-gradient(135deg, rgba(255,109,0,.07), rgba(255,109,0,.02));
+      border-radius: 0 10px 10px 0; padding: 1.2rem 1.5rem; margin: 1.5rem 0; font-size: .97rem;
+    }
+    .callout.cy { border-left-color: var(--a1); background: linear-gradient(135deg, rgba(0,229,255,.06), rgba(0,229,255,.01)); }
+    .callout.gr { border-left-color: var(--a3); background: linear-gradient(135deg, rgba(118,255,3,.06), rgba(118,255,3,.01)); }
+
+    .oligo-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px,1fr)); gap: 1.2rem; margin-top: 1.4rem; }
+    .oligo-card {
+      background: var(--card); border: 1px solid rgba(255,109,0,.18);
+      border-radius: 12px; padding: 1.5rem; text-align: center;
+      transition: transform .3s, box-shadow .3s;
+    }
+    .oligo-card:hover { transform: translateY(-5px); box-shadow: var(--g2); }
+    .oligo-card .pct { font-family: 'Orbitron', sans-serif; font-size: 2.2rem; font-weight: 900; color: var(--a2); display: block; text-shadow: var(--g2); }
+    .oligo-card .name { font-family: 'Share Tech Mono', monospace; font-size: .7rem; color: var(--a1); letter-spacing: .12em; margin: .3rem 0 .6rem; display: block; }
+    .oligo-card p { font-size: .82rem; color: var(--muted); margin: 0; }
+
+    /* PRICE CHART */
+    .price-strip {
+      display: flex; flex-wrap: wrap; gap: 1px;
+      background: rgba(255,109,0,.15); border: 1px solid rgba(255,109,0,.15);
+      border-radius: 12px; overflow: hidden; margin-top: 1.8rem;
+    }
+    .ps-cell { flex: 1; min-width: 140px; padding: 1.5rem 1.2rem; background: var(--surface); text-align: center; }
+    .ps-cell .n { font-family: 'Orbitron', sans-serif; font-size: 1.5rem; font-weight: 900; color: var(--a2); display: block; text-shadow: var(--g2); }
+    .ps-cell .l { font-family: 'Share Tech Mono', monospace; font-size: .6rem; color: var(--muted); letter-spacing: .1em; margin-top: .3rem; display: block; }
+
+    .chart-container {
+      background: var(--card); border: 1px solid rgba(0,229,255,.14);
+      border-radius: 16px; padding: 2rem; margin-top: 1.5rem;
+    }
+    .chart-tabs { display: flex; gap: .5rem; margin-bottom: 1.5rem; flex-wrap: wrap; }
+    .chart-tab {
+      font-family: 'Share Tech Mono', monospace; font-size: .7rem; letter-spacing: .1em;
+      padding: .4rem .9rem; border-radius: 6px;
+      border: 1px solid rgba(0,229,255,.2); color: var(--muted); background: transparent;
+      cursor: pointer; transition: all .2s;
+    }
+    .chart-tab.active, .chart-tab:hover { color: var(--a1); border-color: var(--a1); background: rgba(0,229,255,.08); }
+    .chart-canvas-wrap { position: relative; height: 380px; }
+    .chart-note { font-family: 'Share Tech Mono', monospace; font-size: .67rem; color: var(--muted); margin-top: 1rem; letter-spacing: .06em; line-height: 1.6; }
+
+    /* FOOTER */
+    footer { text-align: center; padding: 3rem 2rem; font-family: 'Share Tech Mono', monospace; font-size: .72rem; color: var(--muted); letter-spacing: .1em; border-top: 1px solid rgba(0,229,255,.08); }
+    footer span { color: var(--a1); }
+  </style>
+</head>
+<body>
+
+<nav>
+  <a class="nav-brand" href="#top">RAM//EVOLUTION</a>
+  <ul class="nav-links">
+    <li><a href="#historia">Historia</a></li>
+    <li><a href="#tipos">Tipos</a></li>
+    <li><a href="#specs">Specs</a></li>
+    <li><a href="#mercado">Mercado</a></li>
+    <li><a href="#precios">Precios ARS</a></li>
+    <li><a href="#futuro">Futuro</a></li>
+  </ul>
+</nav>
+
+<!-- HERO -->
+<header id="top">
+  <div class="hero-glow"></div>
+  <div class="chip-icon">🧠</div>
+  <h1>EVOLUCIÓN DE LA RAM</h1>
+  <p class="subtitle">// Historia · Tecnología · Mercado · Precios en Pesos Argentinos</p>
+  <div class="scroll-hint">▼ SCROLL PARA EXPLORAR ▼</div>
+</header>
+
+<!-- HISTORIA -->
+<section id="historia">
+  <div class="section-label">// 01 · Cronología</div>
+  <h2>Historia de la RAM</h2>
+  <div class="timeline">
+    <div class="tl-item"><div class="tl-dot"></div>
+      <div class="tl-year">1947 · Tubo Williams</div><h3>Los Primeros Pasos</h3>
+      <p>El tubo Williams-Kilburn fue la primera RAM verdadera. Almacenaba ~1024 bits usando rayos de electrones en un tubo de rayos catódicos.</p>
+    </div>
+    <div class="tl-item"><div class="tl-dot"></div>
+      <div class="tl-year">1968 · DRAM</div><h3>Nacimiento de la DRAM</h3>
+      <p>Robert Dennard en IBM patenta la DRAM: un transistor y un condensador por celda. Sentó las bases de toda la memoria de consumo actual.</p>
+    </div>
+    <div class="tl-item"><div class="tl-dot"></div>
+      <div class="tl-year">1987 · FPM DRAM</div><h3>Fast Page Mode</h3>
+      <p>Permitió acceder a varias celdas de la misma fila de forma más rápida, mejorando el ancho de banda sin rediseñar el chip por completo.</p>
+    </div>
+    <div class="tl-item"><div class="tl-dot"></div>
+      <div class="tl-year">1993 · SDRAM</div><h3>Sincronización con el Bus</h3>
+      <p>La SDRAM sincronizó las operaciones con el reloj del sistema. Capacidades típicas de 16–64 MB con velocidades de 66 a 133 MHz.</p>
+    </div>
+    <div class="tl-item"><div class="tl-dot"></div>
+      <div class="tl-year">2000 · DDR</div><h3>Double Data Rate</h3>
+      <p>Transfiere datos en ambos flancos del ciclo de reloj, duplicando el ancho de banda teórico. Velocidades de 200 a 400 MT/s.</p>
+    </div>
+    <div class="tl-item"><div class="tl-dot"></div>
+      <div class="tl-year">2007 · DDR3</div><h3>Eficiencia y Masificación</h3>
+      <p>Voltaje 1,5 V, hasta 2133 MT/s. Popularizó los 8 GB como estándar y fue la plataforma dominante durante casi una década.</p>
+    </div>
+    <div class="tl-item"><div class="tl-dot"></div>
+      <div class="tl-year">2014 · DDR4</div><h3>La Era del Gaming Moderno</h3>
+      <p>Voltaje 1,2 V, hasta 5333 MT/s con XMP. Los 16–32 GB se convirtieron en el estándar. Módulos de hasta 64 GB por DIMM.</p>
+    </div>
+    <div class="tl-item"><div class="tl-dot"></div>
+      <div class="tl-year">2020 · DDR5</div><h3>El Presente de Alta Velocidad</h3>
+      <p>Voltaje 1,1 V, de 4800 hasta 7200+ MT/s. ECC on-die nativo, doble subcanal por DIMM y módulos hasta 256 GB. Diseñada para IA.</p>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- TIPOS -->
+<section id="tipos">
+  <div class="section-label">// 02 · Tipos</div>
+  <h2>Tipos de Memoria RAM</h2>
+  <div class="cards">
+    <div class="card"><div class="card-icon">⚡</div><h3>DRAM</h3><p>Memoria dinámica. Requiere refresco constante. Base de toda la RAM de propósito general en PCs y servidores actuales.</p></div>
+    <div class="card"><div class="card-icon">🔒</div><h3>SRAM</h3><p>Estática, más rápida y cara. No necesita refresco. Se usa en cachés L1, L2 y L3 dentro de los procesadores modernos.</p></div>
+    <div class="card"><div class="card-icon">📱</div><h3>LPDDR</h3><p>Low Power DDR para dispositivos móviles. LPDDR5X supera los 8533 MT/s con consumo optimizado para smartphones y tablets.</p></div>
+    <div class="card"><div class="card-icon">🎮</div><h3>GDDR</h3><p>RAM gráfica de alto ancho de banda. GDDR7 (2024) alcanza más de 1,5 TB/s en GPUs como la RTX 5090 de NVIDIA.</p></div>
+    <div class="card"><div class="card-icon">🏔️</div><h3>HBM</h3><p>High Bandwidth Memory apilada en 3D. Usada en aceleradores de IA (H100/H200). HBM3e supera 3,3 TB/s en sistemas completos.</p></div>
+    <div class="card"><div class="card-icon">🛡️</div><h3>ECC RAM</h3><p>Corrección de errores en tiempo real. Indispensable en servidores, sistemas médicos y financieros. DDR5 incluye ECC on-die nativa.</p></div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ANCHO DE BANDA -->
+<section>
+  <div class="section-label">// 03 · Rendimiento</div>
+  <h2>Evolución del Ancho de Banda</h2>
+  <div class="bar-section">
+    <div class="bar-row"><span class="bar-label">SDRAM</span><div class="bar-track"><div class="bar-fill" style="width:4%;background:linear-gradient(90deg,#5a7a9a,#7090aa)"></div></div><span class="bar-val">~800 MB/s</span></div>
+    <div class="bar-row"><span class="bar-label">DDR</span><div class="bar-track"><div class="bar-fill" style="width:7%;background:linear-gradient(90deg,#2196f3,#42a5f5)"></div></div><span class="bar-val">~3.2 GB/s</span></div>
+    <div class="bar-row"><span class="bar-label">DDR2</span><div class="bar-track"><div class="bar-fill" style="width:12%;background:linear-gradient(90deg,#2196f3,#42a5f5)"></div></div><span class="bar-val">~8.5 GB/s</span></div>
+    <div class="bar-row"><span class="bar-label">DDR3</span><div class="bar-track"><div class="bar-fill" style="width:22%;background:linear-gradient(90deg,#00bcd4,#00e5ff)"></div></div><span class="bar-val">~17 GB/s</span></div>
+    <div class="bar-row"><span class="bar-label">DDR4</span><div class="bar-track"><div class="bar-fill" style="width:45%;background:linear-gradient(90deg,#00acc1,#00e5ff)"></div></div><span class="bar-val">~34 GB/s</span></div>
+    <div class="bar-row"><span class="bar-label">DDR5</span><div class="bar-track"><div class="bar-fill" style="width:75%;background:linear-gradient(90deg,#00e5ff,#80ffff);box-shadow:0 0 10px #00e5ff66"></div></div><span class="bar-val">~57 GB/s</span></div>
+    <div class="bar-row"><span class="bar-label">LPDDR5X</span><div class="bar-track"><div class="bar-fill" style="width:68%;background:linear-gradient(90deg,#ff6d00,#ffa040);box-shadow:0 0 10px #ff6d0044"></div></div><span class="bar-val">~68 GB/s</span></div>
+    <div class="bar-row"><span class="bar-label">HBM3e</span><div class="bar-track"><div class="bar-fill" style="width:100%;background:linear-gradient(90deg,#76ff03,#b2ff59);box-shadow:0 0 10px #76ff0344"></div></div><span class="bar-val">&gt;1.2 TB/s</span></div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- SPECS TABLE -->
+<section id="specs">
+  <div class="section-label">// 04 · Especificaciones</div>
+  <h2>Tabla Comparativa DDR</h2>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Generación</th><th>Año</th><th>Voltaje</th><th>Velocidad (MT/s)</th><th>Ancho de banda</th><th>Capacidad máx.</th><th>Estado</th></tr></thead>
+      <tbody>
+        <tr><td>SDRAM</td><td>1993</td><td>3.3 V</td><td>66 – 133</td><td>~1.06 GB/s</td><td>512 MB</td><td><span class="badge badge-blue">Obsoleto</span></td></tr>
+        <tr><td>DDR1</td><td>2000</td><td>2.5 V</td><td>200 – 400</td><td>~3.2 GB/s</td><td>1 GB</td><td><span class="badge badge-blue">Obsoleto</span></td></tr>
+        <tr><td>DDR2</td><td>2003</td><td>1.8 V</td><td>400 – 1066</td><td>~8.5 GB/s</td><td>4 GB</td><td><span class="badge badge-blue">Obsoleto</span></td></tr>
+        <tr><td>DDR3</td><td>2007</td><td>1.5 V</td><td>800 – 2133</td><td>~17 GB/s</td><td>16 GB</td><td><span class="badge badge-blue">Legado</span></td></tr>
+        <tr><td>DDR4</td><td>2014</td><td>1.2 V</td><td>2133 – 5333</td><td>~34 GB/s</td><td>64 GB</td><td><span class="badge badge-or">Activo</span></td></tr>
+        <tr><td>DDR5</td><td>2020</td><td>1.1 V</td><td>4800 – 7200+</td><td>~57 GB/s</td><td>256 GB</td><td><span class="badge badge-green">Actual</span></td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ANÁLISIS DE MERCADO -->
+<section id="mercado">
+  <div class="section-label">// 05 · Análisis de Mercado</div>
+  <h2 class="ou">Mercado Global de RAM</h2>
+
+  <div class="market-intro">
+    <p>El mercado de la memoria no es un "libre mercado" tradicional. Está dominado por un <strong>oligopolio</strong> donde tres fabricantes controlan más del 90% de la producción mundial. Esto les otorga un poder casi total sobre el suministro y los precios a nivel global.</p>
+    <p>Cuando uno de estos tres decide reducir la producción —como ocurrió recientemente para priorizar la memoria HBM para IA— el precio sube automáticamente para todos los segmentos del mercado, incluyendo al usuario final y a las pymes de todo el mundo.</p>
+  </div>
+
+  <div class="oligo-grid">
+    <div class="oligo-card"><span class="pct">~45%</span><span class="name">SAMSUNG</span><p>Líder mundial. Produce DDR5, LPDDR5X, HBM3e y GDDR7. Primero en HBM de alta capacidad para centros de datos.</p></div>
+    <div class="oligo-card"><span class="pct">~30%</span><span class="name">SK HYNIX</span><p>Proveedor exclusivo de HBM3e para NVIDIA H100/H200. El más beneficiado por la explosión de la IA en 2024.</p></div>
+    <div class="oligo-card"><span class="pct">~23%</span><span class="name">MICRON</span><p>Principal fabricante americano. Fuerte en LPDDR para Apple y en memoria para servidores. Sede en Boise, Idaho.</p></div>
+    <div class="oligo-card"><span class="pct">&lt;2%</span><span class="name">OTROS</span><p>Nanya, Winbond y actores menores cubren nichos industriales, automotriz y memoria embebida de bajo volumen.</p></div>
+  </div>
+
+  <h2 class="ou" style="margin-top:3.5rem;">Las 5 Fuerzas de Porter</h2>
+  <div class="table-wrap">
+    <table class="porter-table">
+      <thead><tr><th>Fuerza</th><th>Nivel de Riesgo</th><th>Análisis</th></tr></thead>
+      <tbody>
+        <tr><td>Poder de los Proveedores</td><td><span class="rbadge r-high">MUY ALTO</span></td><td>Los fabricantes priorizan a Google, NVIDIA y Apple antes que al usuario final. Sin alternativas reales disponibles en el corto plazo.</td></tr>
+        <tr><td>Poder de los Compradores</td><td><span class="rbadge r-low">BAJO</span></td><td>Como usuario final o pequeño ensamblador de PC, no existe fuerza de negociación. O se paga el precio de lista, o no hay RAM.</td></tr>
+        <tr><td>Amenaza de Nuevos Competidores</td><td><span class="rbadge r-nul">NULA</span></td><td>Construir una fab de semiconductores cuesta miles de millones de dólares y requiere años de I+D. No habrá nuevas marcas de chips pronto.</td></tr>
+        <tr><td>Amenaza de Sustitutos</td><td><span class="rbadge r-low">BAJA</span></td><td>No existe reemplazo real para la RAM. El "Swap" (disco como RAM) es un parche lento que no compite en rendimiento para ningún uso profesional.</td></tr>
+        <tr><td>Rivalidad en la Industria</td><td><span class="rbadge r-mod">MODERADA</span></td><td>Compiten en tecnología (quien hace la RAM más rápida), pero suelen alinearse en estrategias de precios para mantener márgenes elevados.</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h2 class="ou" style="margin-top:3.5rem;">El Factor Cisne Negro: La IA</h2>
+  <div class="callout">
+    🦢 <strong>La explosión de la IA (2024–2026) es el evento que cambió todo.</strong> Las fábricas priorizan HBM3e para servidores de IA porque deja un margen de ganancia de hasta un <strong>500%</strong> comparado con la RAM DDR5 de consumo masivo.
+  </div>
+  <p>El mercado de consumo sufre una <strong>"escasez inducida"</strong>: la capacidad de producción está ocupada alimentando grandes modelos de lenguaje. El consumidor hogareño compite con centros de datos multimillonarios por el mismo silicio fabricado en las mismas fábricas.</p>
+  <div class="callout gr">
+    📈 <strong>Demanda inelástica:</strong> la RAM se comporta cada vez más como un <em>commodity</em> (similar al petróleo o el oro), con precio que fluctúa semanalmente según los mercados de valores asiáticos. La recomendación es <strong>cautela</strong>: la estabilización de precios llegará recién con las nuevas plantas en plena producción, estimado para finales de <strong>2027</strong>.
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- PRECIOS ARS -->
+<section id="precios">
+  <div class="section-label">// 06 · Mercado Argentino</div>
+  <h2 class="ou">Evolución de Precios en Pesos Argentinos</h2>
+  <p>En Argentina, el precio de la RAM en pesos refleja una doble presión: los ciclos globales de oferta/demanda <em>más</em> la devaluación acumulada del peso frente al dólar. El resultado es una curva de precios exponencial que supera ampliamente la inflación internacional del producto.</p>
+
+  <div class="price-strip">
+    <div class="ps-cell"><span class="n">$2.800</span><span class="l">MÍNIMO HISTÓRICO (2018)</span></div>
+    <div class="ps-cell"><span class="n">$198.000</span><span class="l">PICO DE PRECIOS (DIC 2023)</span></div>
+    <div class="ps-cell"><span class="n">×70</span><span class="l">MULTIPLICADOR EN 6 AÑOS</span></div>
+    <div class="ps-cell"><span class="n">$125.000</span><span class="l">PRECIO ESTIMADO (2025)</span></div>
+  </div>
+
+  <div class="chart-container">
+    <div class="chart-tabs">
+      <button class="chart-tab active" onclick="switchChart('ddr4_8gb', this)">DDR4 8 GB</button>
+      <button class="chart-tab" onclick="switchChart('ddr4_16gb', this)">DDR4 16 GB</button>
+      <button class="chart-tab" onclick="switchChart('ddr5_16gb', this)">DDR5 16 GB</button>
+      <button class="chart-tab" onclick="switchChart('all', this)">Comparar todas</button>
+    </div>
+    <div class="chart-canvas-wrap">
+      <canvas id="priceChart"></canvas>
+    </div>
+    <p class="chart-note">
+      * Precios orientativos en pesos argentinos (ARS) para módulos DIMM en el mercado minorista local (MercadoLibre, Venex, FullH4rd, Electroshop). Datos aproximados por trimestre. El precio en ARS = precio USD mundial × tipo de cambio oficial/blue + impuestos de importación (~35%) + flete + margen mayorista y minorista. Los datos de DDR5 16 GB parten de T3 2023, cuando comenzó a comercializarse masivamente en Argentina.
+    </p>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- FUTURO -->
+<section id="futuro">
+  <div class="section-label">// 07 · Horizonte Tecnológico</div>
+  <h2 class="gu">El Futuro de la RAM</h2>
+  <p>Las demandas de la inteligencia artificial, el cómputo en el borde y los nuevos paradigmas de hardware están empujando los límites de la RAM convencional. Estas son las tecnologías que definirán la próxima década:</p>
+  <div class="future-grid">
+    <div class="future-card"><h3>DDR6</h3><p>En desarrollo por JEDEC. Superará los 12 800 MT/s con voltaje de 1.0 V. Estimado: 2026–2027 en servidores, 2028 en consumo.</p></div>
+    <div class="future-card"><h3>HBM4</h3><p>Apilado 3D para aceleradores IA. Anchos de banda proyectados mayores a 2 TB/s por stack. Clave para LLMs de próxima generación.</p></div>
+    <div class="future-card"><h3>CXL Memory</h3><p>Compute Express Link permite expandir la memoria vía PCIe, ideal para servidores con terabytes de RAM compartida entre CPUs y GPUs.</p></div>
+    <div class="future-card"><h3>Memoria Fotónica</h3><p>Transmisión de datos mediante luz. Latencias ultrabaja y ancho de banda teórico varias veces superior al electrónico. En investigación activa.</p></div>
+    <div class="future-card"><h3>MRAM &amp; RRAM</h3><p>Memorias no volátiles resistivas: velocidad de RAM con persistencia de almacenamiento. El fin de la RAM volátil podría estar más cerca de lo esperado.</p></div>
+    <div class="future-card"><h3>Memoria Neuromórfica</h3><p>Arquitecturas donde memoria y cómputo coexisten en el mismo sustrato, eliminando el cuello de botella Von Neumann de la arquitectura actual.</p></div>
+  </div>
+</section>
+
+<footer>
+  <p>RAM//EVOLUTION · Diseñado con <span>⚡</span> · Historia + Análisis de Mercado + Precios ARS</p>
+  <p style="margin-top:.5rem;">© 2026 · Datos orientativos · Fuentes: JEDEC, MercadoLibre, Venex, reportes de industria</p>
+</footer>
+
+<script>
+  const LABELS = [
+    'T1 2018','T3 2018','T1 2019','T3 2019',
+    'T1 2020','T3 2020','T1 2021','T3 2021',
+    'T1 2022','T3 2022','T1 2023','T3 2023',
+    'T1 2024','T3 2024','T1 2025'
+  ];
+
+  const DS = {
+    ddr4_8gb: {
+      label: 'DDR4 8 GB',
+      data: [2800,4200,5800,7500,9800,14000,18500,24000,38000,62000,95000,198000,165000,142000,125000],
+      bc: '#00e5ff', bg: 'rgba(0,229,255,0.08)'
+    },
+    ddr4_16gb: {
+      label: 'DDR4 16 GB',
+      data: [5200,7800,11000,14500,19000,27000,36000,48000,74000,118000,182000,375000,310000,265000,235000],
+      bc: '#ff6d00', bg: 'rgba(255,109,0,0.08)'
+    },
+    ddr5_16gb: {
+      label: 'DDR5 16 GB',
+      data: [null,null,null,null,null,null,null,null,null,null,290000,520000,415000,355000,310000],
+      bc: '#76ff03', bg: 'rgba(118,255,3,0.08)'
+    }
+  };
+
+  function mkDs(key) {
+    const d = DS[key];
+    return {
+      label: d.label + ' — Precio ARS',
+      data: d.data, borderColor: d.bc, backgroundColor: d.bg,
+      borderWidth: 2.5, pointBackgroundColor: d.bc, pointRadius: 4,
+      pointHoverRadius: 7, pointBorderColor: '#050a0f', pointBorderWidth: 2,
+      fill: true, tension: 0.4, spanGaps: true
+    };
+  }
+
+  Chart.defaults.color = '#5a7a9a';
+  Chart.defaults.font.family = "'Share Tech Mono', monospace";
+
+  const chart = new Chart(document.getElementById('priceChart').getContext('2d'), {
+    type: 'line',
+    data: { labels: LABELS, datasets: [mkDs('ddr4_8gb')] },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      interaction: { mode: 'index', intersect: false },
+      plugins: {
+        legend: { labels: { color: '#cfe8ff', font: { size: 11 }, padding: 20, boxWidth: 14 } },
+        tooltip: {
+          backgroundColor: 'rgba(11,21,32,0.95)',
+          borderColor: 'rgba(0,229,255,0.3)', borderWidth: 1,
+          titleColor: '#00e5ff', bodyColor: '#cfe8ff', padding: 12,
+          callbacks: {
+            label: c => c.parsed.y === null
+              ? ' Sin datos disponibles'
+              : ' $' + c.parsed.y.toLocaleString('es-AR') + ' ARS'
+          }
+        }
+      },
+      scales: {
+        x: { grid: { color: 'rgba(0,229,255,0.06)' }, ticks: { color: '#5a7a9a', font: { size: 10 }, maxRotation: 45 } },
+        y: {
+          grid: { color: 'rgba(0,229,255,0.06)' },
+          ticks: {
+            color: '#5a7a9a', font: { size: 10 },
+            callback: v => '$' + (v >= 1000 ? (v/1000).toFixed(0) + 'k' : v)
+          }
+        }
+      }
+    }
+  });
+
+  function switchChart(key, btn) {
+    document.querySelectorAll('.chart-tab').forEach(t => t.classList.remove('active'));
+    btn.classList.add('active');
+    chart.data.datasets = key === 'all'
+      ? [mkDs('ddr4_8gb'), mkDs('ddr4_16gb'), mkDs('ddr5_16gb')]
+      : [mkDs(key)];
+    chart.update('active');
+  }
+</script>
+</body>
+</html>
